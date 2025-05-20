@@ -20,6 +20,9 @@ Future<void> main() async {
 
   final authController = Get.find<AuthController>();
 
+  // get local storagte  and update authcontroller user
+  authController.loadSession();
+
   runApp(const MyApp());
 }
 
@@ -29,6 +32,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'RefillMate',
       theme: ThemeData(
         primarySwatch: Colors.blue,

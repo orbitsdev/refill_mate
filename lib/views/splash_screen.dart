@@ -17,8 +17,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _navigate() async {
-    await Future.delayed(const Duration(seconds: 2));
     final authController = Get.find<AuthController>();
+    await authController.loadSession(); // Ensure session is loaded from storage
+    await Future.delayed(const Duration(seconds: 2));
     if (authController.currentUser.value != null) {
       Get.offAllNamed('/home-screen');
     } else {

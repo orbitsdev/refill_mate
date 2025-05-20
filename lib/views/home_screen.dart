@@ -10,8 +10,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
-    final user = authController.currentUser.value;
-    return Container(
+    return Obx(() {
+      final user = authController.currentUser.value;
+      return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFB3E5FC), Color(0xFFE1F5FE)],
@@ -87,8 +88,30 @@ class HomeScreen extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.logout, color: Colors.white),
                   onPressed: () async {
-                    await authController.logout();
-                    Get.offAllNamed('/login-screen');
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        title: const Text('Confirm Logout', style: TextStyle(color: Color(0xFF01579B), fontWeight: FontWeight.bold)),
+                        content: const Text('Are you sure you want to log out?', style: TextStyle(color: Color(0xFF01579B))),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: const Text('Cancel', style: TextStyle(color: Color(0xFF29B6F6))),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF29B6F6)),
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: const Text('Logout', style: TextStyle(color: Colors.white)),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed == true) {
+                      await authController.logout();
+                      Get.offAllNamed('/login-screen');
+                    }
                   },
                   tooltip: 'Logout',
                 ),
@@ -125,5 +148,6 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  });
   }
 }

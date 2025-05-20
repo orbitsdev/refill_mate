@@ -11,6 +11,7 @@ class GuestMiddleware extends GetMiddleware {
   @override
   RouteSettings? redirect(String? route) {
     final authController = Get.find<AuthController>();
+
     if (authController.currentUser.value != null) {
       return const RouteSettings(name: '/home-screen');
     }

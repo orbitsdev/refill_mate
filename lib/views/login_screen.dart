@@ -15,48 +15,71 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final AuthController authController = Get.find<AuthController>();
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+     
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('RefillMate', style: Theme.of(context).textTheme.headlineMedium),
+              Image.asset('assets/images/logo.png', height: 90),
+              const SizedBox(height: 20),
+              Text(
+                'RefillMate',
+                style: Theme.of(context).textTheme.headlineMedium,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 32),
               TextField(
                 controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: Icon(Icons.email),
+                ),
               ),
               const SizedBox(height: 16),
-              TextField(
-                controller: passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
+              StatefulBuilder(
+                builder: (context, setState) => TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                    ),
+                  ),
+                  obscureText: _obscurePassword,
+                ),
               ),
               const SizedBox(height: 24),
-              Obx(() => AnimatedButton(
-                label: 'Login',
-                isLoading: authController.isLoading.value,
-                onTap: () async {
-                  final email = emailController.text.trim();
-                  final password = passwordController.text;
-                  if (email.isEmpty || password.isEmpty) {
-                    Modal.showErrorModal(message: 'Please enter email and password.', showButton: true);
-                    return;
-                  }
-                  final success = await authController.login(email, password);
-                  if (success) {
-                    Get.offAllNamed('/home-screen');
-                  } else {
-                    Modal.showErrorModal(message: 'Invalid credentials.', showButton: true);
-                  }
-                },
-              )),
+              SizedBox(
+                width: double.infinity,
+                child: Obx(() => AnimatedButton(
+                  label: 'Login',
+                  isLoading: authController.isLoading.value,
+                  onTap: () async {
+                    final email = emailController.text.trim();
+                    final password = passwordController.text;
+                    if (email.isEmpty || password.isEmpty) {
+                      Modal.showErrorModal(message: 'Please enter email and password.', showButton: true);
+                      return;
+                    }
+                    final success = await authController.login(email, password);
+                    if (success) {
+                      Get.offAllNamed('/home-screen');
+                    } else {
+                      Modal.showErrorModal(message: 'Invalid credentials.', showButton: true);
+                    }
+                  },
+                )),
+              ),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => Get.toNamed('/registration-screen'),
